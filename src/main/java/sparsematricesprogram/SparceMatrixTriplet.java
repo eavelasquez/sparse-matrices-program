@@ -14,7 +14,7 @@ import java.util.Scanner;
 public class SparceMatrixTriplet {
 
     private int rows, columns; // dimensions of sparse matrix
-    private int values;        // total number of elements in matrix
+    private int values; // total number of elements in matrix
 
     // Array representation of sparse matrix
     // [][0] represents rows
@@ -29,9 +29,11 @@ public class SparceMatrixTriplet {
      * @param values
      */
     public SparceMatrixTriplet(int rows, int columns, int values) {
-        this.rows = rows;           // initialize rows
-        this.columns = columns;     // initialize columns
-        this.values = values + 1;   // initialize values
+        this.rows = rows; // initialize rows
+        this.columns = columns; // initialize columns
+        this.values = values + 1; // initialize values
+
+        this.sparseMatrix = new float[this.values][3];
         this.sparseMatrix[0][0] = this.rows;
         this.sparseMatrix[0][1] = columns;
         this.sparseMatrix[0][2] = this.values;
@@ -189,7 +191,7 @@ public class SparceMatrixTriplet {
                 this.resize();
             }
 
-            for (int k = (int) this.sparseMatrix[0][2]; k > i; k--) {
+            for (int k = (int) this.sparseMatrix[0][2] -1 ; k > i; k--) {
                 this.sparseMatrix[k + 1][0] = this.sparseMatrix[k][0];
                 this.sparseMatrix[k + 1][1] = this.sparseMatrix[k][1];
                 this.sparseMatrix[k + 1][2] = this.sparseMatrix[k][2];
@@ -236,7 +238,7 @@ public class SparceMatrixTriplet {
         for (int i = 0; i < 10; i++) {
             result += (int) this.sparseMatrix[i][3];
         }
-        
+
         return result;
     }
 
