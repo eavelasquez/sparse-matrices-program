@@ -10,6 +10,7 @@ import java.util.Scanner;
 /**
  *
  * @author ev
+ * @author drestrepom
  */
 public class SparseMatricesProgram {
 

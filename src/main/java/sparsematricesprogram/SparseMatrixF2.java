@@ -15,30 +15,112 @@ public class SparseMatrixF2 {
     private Node head; // head of list
 
     /**
-     * 
+     *
      * @param rows
-     * @param columns 
+     * @param columns
      */
     public SparseMatrixF2(int rows, int columns) {
         this.head = new Node(rows, columns, 0);
         this.head.setNextRow(this.head);
         this.head.setNextColumn(this.head);
     }
-    
+
+    /**
+     *
+     */
     public void show() {
         Node startRow = this.head.getNextRow();
         Node startColumn = this.head.getNextColumn();
-        
+
         while (startRow != this.head) {
             System.out.println("    " + startRow.getNextRow());
         }
     }
-    
+
+    /**
+     * This method is used to store a data in the sparse matrix f2.
+     *
+     * @param row
+     * @param column
+     * @param value
+     */
+    public void storeData(int row, int column, float value) {
+        Node start = this.head.getNextRow(), previousRow = this.head, previousColumn = this.head;
+
+        while (start != this.head && start.getRow() < row) {
+            previousRow = start;
+            start = start.getNextRow();
+        }
+
+        while (start != this.head && start.getRow() <= row && start.getColumn() < column) {
+            previousRow = start;
+            start = start.getNextRow();
+        }
+
+        start = this.head.getNextColumn();
+
+        while (start != this.head && start.getColumn() < column) {
+            previousColumn = start;
+            start = start.getNextColumn();
+        }
+
+        if (start != this.head && start.getRow() == row && start.getColumn() == column) {
+            System.out.println("");
+        } else {
+            Node newNode = new Node(row, column, value);
+
+            newNode.setNextRow(previousRow.getNextRow());
+            previousRow.setNextRow(newNode);
+
+            newNode.setNextColumn(start);
+            previousColumn.setNextColumn(newNode);
+        }
+    }
+
+    /**
+     * This method is used to insert a data in the sparse matrix f2.
+     *
+     * @param row the row to be inserted.
+     * @param column the column to be inserted.
+     * @param value the value to be inserted.
+     */
     public void insertNode(int row, int column, float value) {
-        Node startRow = this.head.getNextRow(), previousRow = this.head, previousColumn = this.head;
-        
-        while (startRow != this.head) {
-            
+        Node start = this.head.getNextRow(), previousRow = this.head, previousColumn = this.head;
+
+        while (start != this.head && start.getRow() < row) {
+            previousRow = start;
+            start = start.getNextRow();
+        }
+
+        start = this.head.getNextColumn();
+
+        while (start != this.head && start.getColumn() < column) {
+            previousColumn = start;
+            start = start.getNextColumn();
+        }
+
+        while (start != this.head && start.getRow() < row && start.getColumn() <= column) {
+            previousColumn = start;
+            start = start.getNextColumn();
+        }
+
+        if (start != this.head && start.getRow() == row && start.getColumn() == column) {
+            float sum = start.getValue() + value;
+
+            if (sum != 0) {
+                start.setValue(sum);
+            } else {
+                previousRow.setNextRow(start.getNextRow());
+                previousColumn.setNextColumn(start.getNextColumn());
+            }
+        } else {
+            Node newNode = new Node(row, column, value);
+
+            newNode.setNextRow(newNode);
+            previousRow.setNextRow(newNode);
+
+            newNode.setNextColumn(previousColumn.getNextColumn());
+            previousColumn.setNextColumn(newNode);
         }
     }
 }
@@ -47,6 +129,7 @@ public class SparseMatrixF2 {
  * The {@code Node} class represents a node for linked lists.
  *
  * @author ev
+ * @author drestrepom
  */
 class Node {
 
@@ -61,11 +144,11 @@ class Node {
      * @param column the column.
      * @param value the value.
      * @throws IllegalArgumentException if {@code row} is zero or negative.
-     * @throws IllegalArgumentException if {@code exponent} is zero or negative.
+     * @throws IllegalArgumentException if {@code column} is zero or negative.
      */
     public Node(int row, int column, float value) {
         if (row <= 0) {
-            throw new IllegalArgumentException("coefficient cannot be zero or negative" + row);
+            throw new IllegalArgumentException("row cannot be zero or negative" + row);
         }
         if (column <= 0) {
             throw new IllegalArgumentException("column cannot be zero or negative: " + column);
