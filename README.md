@@ -1,1 +1,0 @@
-# sparsematrices-program
