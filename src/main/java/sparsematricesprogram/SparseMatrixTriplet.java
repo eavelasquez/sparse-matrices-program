@@ -10,8 +10,9 @@ import java.util.Scanner;
 /**
  *
  * @author ev
+ * @author drestrepom
  */
-public class SparceMatrixTriplet {
+public class SparseMatrixTriplet {
 
     private int rows, columns; // dimensions of sparse matrix
     private int values; // total number of elements in matrix
@@ -28,14 +29,14 @@ public class SparceMatrixTriplet {
      * @param columns
      * @param values
      */
-    public SparceMatrixTriplet(int rows, int columns, int values) {
+    public SparseMatrixTriplet(int rows, int columns, int values) {
         this.rows = rows; // initialize rows
         this.columns = columns; // initialize columns
         this.values = values + 1; // initialize values
 
         this.sparseMatrix = new float[this.values][3];
         this.sparseMatrix[0][0] = this.rows;
-        this.sparseMatrix[0][1] = columns;
+        this.sparseMatrix[0][1] = this.columns;
         this.sparseMatrix[0][2] = this.values;
     }
 
@@ -123,8 +124,8 @@ public class SparceMatrixTriplet {
 
     /**
      *
-     * @param row
-     * @param column
+     * @param row the row.
+     * @param column the column.
      * @return
      */
     public int findPosition(int row, int column) {
@@ -191,7 +192,7 @@ public class SparceMatrixTriplet {
                 this.resize();
             }
 
-            for (int k = (int) this.sparseMatrix[0][2] -1 ; k > i; k--) {
+            for (int k = (int) this.sparseMatrix[0][2] - 1; k > i; k--) {
                 this.sparseMatrix[k + 1][0] = this.sparseMatrix[k][0];
                 this.sparseMatrix[k + 1][1] = this.sparseMatrix[k][1];
                 this.sparseMatrix[k + 1][2] = this.sparseMatrix[k][2];
@@ -242,11 +243,41 @@ public class SparceMatrixTriplet {
         return result;
     }
 
+    public void rowWithLeastSum() {
+        int i = 2, j = 1, row = 0, rowLessSum = 0, lessSum = 0, currentSum = 0, previousSum = 0;
+
+        while (i <= this.sparseMatrix[1][3] + 1) {
+            currentSum = 0;
+            row = (int) this.sparseMatrix[i][1];
+
+            while (j <= this.sparseMatrix[1][3] + 1 && row == this.sparseMatrix[i][1]) {
+                currentSum += (int) this.sparseMatrix[i][3];
+                j += 1;
+            }
+
+            if (row != rowLessSum) {
+                if (currentSum < previousSum) {
+                    previousSum = currentSum;
+                    rowLessSum = row;
+                }
+            }
+            row = rowLessSum;
+
+            if (currentSum < previousSum) {
+                previousSum = currentSum;
+                rowLessSum = row;
+            } else {
+                previousSum = 0;
+            }
+        }
+        System.out.println("The " + row + " has the least sum:" + lessSum);
+    }
+
     /**
      *
      * @param B
      */
-    public void add(SparceMatrixTriplet B) {
+    public void add(SparseMatrixTriplet B) {
         // if matrices don't have same dimensions
         if (this.rows != B.rows || this.columns != B.columns) {
             System.out.println("Matrices can't be added.");
