@@ -1,1 +1,1 @@
-# sparsematrices-program
+# sparse-matrices-program
