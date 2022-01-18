@@ -14,8 +14,29 @@ public class SparseMatrixF1 {
 
     private Node head;
 
+    /**
+     * 
+     * @param rows
+     * @param columns 
+     */
     public SparseMatrixF1(int rows, int columns) {
         this.head = createNewNode(rows, columns);
+    }
+
+    /**
+     * 
+     * @return 
+     */
+    public Node getHead() {
+        return head;
+    }
+
+    /**
+     * 
+     * @param head 
+     */
+    public void setHead(Node head) {
+        this.head = head;
     }
 
     private Node createNewNode(int rows, int columns) {
@@ -41,6 +62,10 @@ public class SparseMatrixF1 {
         return start;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public String show() {
         Node start = this.head.getNext(), temp;
         String string = "";
@@ -85,6 +110,12 @@ public class SparseMatrixF1 {
         return result;
     }
 
+    /**
+     * 
+     * @param row
+     * @param column
+     * @param value 
+     */
     public void storeData(int row, int column, float value) {
         Node start = this.head.getNext(), temp, previousRow, previousColumn;
 
@@ -127,6 +158,12 @@ public class SparseMatrixF1 {
         }
     }
 
+    /**
+     * 
+     * @param row
+     * @param column
+     * @param value 
+     */
     public void insertData(int row, int column, float value) {
         Node start = this.head.getNext(), temp, previousRow, previousColumn;
 
@@ -176,6 +213,10 @@ public class SparseMatrixF1 {
         }
     }
 
+    /**
+     * 
+     * @param node 
+     */
     public void bindRow(Node node) {
         Node start = this.head.getNext(), temp, previous;
 
@@ -197,6 +238,10 @@ public class SparseMatrixF1 {
         }
     }
 
+    /**
+     * 
+     * @param node 
+     */
     public void bindColumn(Node node) {
         Node start = this.head.getNext(), temp, previous;
 
@@ -218,6 +263,10 @@ public class SparseMatrixF1 {
         }
     }
 
+    /**
+     * 
+     * @param node 
+     */
     public void unbindRow(Node node) {
         Node start = node.getNextRow(), previousRow = node.getNextRow();
 
@@ -229,6 +278,10 @@ public class SparseMatrixF1 {
         previousRow.setNextRow(node.getNextRow());
     }
 
+    /**
+     * 
+     * @param node 
+     */
     public void unbindColumn(Node node) {
         Node start = node.getNextRow(), previousColumn = node.getNextColumn();
 
@@ -240,6 +293,9 @@ public class SparseMatrixF1 {
         previousColumn.setNextColumn(node.getNextColumn());
     }
 
+    /**
+     * 
+     */
     public void rowWithGreatestValue() {
         Node start = this.head.getNext(), temp;
         float greatValue = 0;

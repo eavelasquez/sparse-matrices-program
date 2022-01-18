@@ -234,6 +234,10 @@ public class SparseMatrixTriplet {
         return isExist;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public int addValues() {
         int result = 0;
         for (int i = 0; i < 10; i++) {
@@ -243,6 +247,9 @@ public class SparseMatrixTriplet {
         return result;
     }
 
+    /**
+     * 
+     */
     public void rowWithLeastSum() {
         int i = 2, j = 1, row = 0, rowLessSum = 0, lessSum = 0, currentSum = 0, previousSum = 0;
 
@@ -274,6 +281,7 @@ public class SparseMatrixTriplet {
     }
 
     /**
+     * Adding Two matrices
      *
      * @param B
      */
@@ -282,6 +290,53 @@ public class SparseMatrixTriplet {
         if (this.rows != B.rows || this.columns != B.columns) {
             System.out.println("Matrices can't be added.");
         } else {
+            SparseMatrixTriplet sum = new SparseMatrixTriplet(this.rows, this.columns, 0);
+
+            for (int i = 0; i < this.rows; i++) {
+                for (int j = 0; j < this.columns; j++) {
+                    // sum[i][j] = this.sparseMatrix[i][j] + B[i][j];  
+                }
+            }
+
+            System.out.println("Sum of two matrices is: ");
         }
+    }
+
+    /**
+     * Mutliplying Two matrices
+     *
+     * @param B
+     */
+    public void multiply(SparseMatrixTriplet B) {
+        if (this.columns != B.rows) {
+            System.out.println("Matrices can't be multiplied.");
+        } else {
+            SparseMatrixTriplet product = new SparseMatrixTriplet(this.rows, B.columns, 0);
+
+            for (int i = 0; i < this.rows; i++) {
+                for (int j = 0; j < B.columns; j++) {
+                    for (int k = 0; k < this.columns; k++) {
+                        // product[i][j] += this.sparseMatrix[i][k] * B[k][j];
+                    }
+                }
+            }
+
+            System.out.println("Multiplication of two matrices is: ");
+        }
+    }
+    
+    /**
+     * Transpose the matrix
+     *
+     * @return
+     */
+    public SparseMatrixTriplet transpose() {
+        SparseMatrixTriplet transpose = new SparseMatrixTriplet(this.getRows(), this.getColumns(), this.getValues());
+
+        for (int i = 0; i < this.sparseMatrix[0][2] + 1; i++) {
+            transpose.storeTriplet((int) this.sparseMatrix[i][1], (int) this.sparseMatrix[i][0], this.sparseMatrix[i][2]);
+        }
+
+        return transpose;
     }
 }
