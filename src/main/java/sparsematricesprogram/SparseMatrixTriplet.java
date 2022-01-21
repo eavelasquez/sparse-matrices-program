@@ -247,6 +247,36 @@ public class SparseMatrixTriplet {
         return result;
     }
 
+    public void rowWithLeastSum() {
+        int i = 2, j = 1, row = 0, rowLessSum = 0, lessSum = 0, currentSum = 0, previousSum = 0;
+
+        while (i <= this.sparseMatrix[1][3] + 1) {
+            currentSum = 0;
+            row = (int) this.sparseMatrix[i][1];
+
+            while (j <= this.sparseMatrix[1][3] + 1 && row == this.sparseMatrix[i][1]) {
+                currentSum += (int) this.sparseMatrix[i][3];
+                j += 1;
+            }
+
+            if (row != rowLessSum) {
+                if (currentSum < previousSum) {
+                    previousSum = currentSum;
+                    rowLessSum = row;
+                }
+            }
+            row = rowLessSum;
+
+            if (currentSum < previousSum) {
+                previousSum = currentSum;
+                rowLessSum = row;
+            } else {
+                previousSum = 0;
+            }
+        }
+        System.out.println("The " + row + " has the least sum:" + lessSum);
+    }
+
     /**
      * 
      */
