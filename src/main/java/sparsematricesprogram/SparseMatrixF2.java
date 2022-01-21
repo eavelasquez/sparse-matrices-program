@@ -27,10 +27,26 @@ public class SparseMatrixF2 {
 
     /**
      *
+     * @return
+     */
+    public Node getHead() {
+        return head;
+    }
+
+    /**
+     *
+     * @param head
+     */
+    public void setHead(Node head) {
+        this.head = head;
+    }
+
+    /**
+     *
      */
     public void show() {
         Node startRow = this.head.getNextRow();
-        Node startColumn = this.head.getNextColumn();
+        // Node startColumn = this.head.getNextColumn();
 
         while (startRow != this.head) {
             System.out.println("    " + startRow.getNextRow());
@@ -122,6 +138,148 @@ public class SparseMatrixF2 {
             newNode.setNextColumn(previousColumn.getNextColumn());
             previousColumn.setNextColumn(newNode);
         }
+    }
+
+    /**
+     *
+     * @param row
+     * @param column
+     * @return
+     */
+    public Node findPosition(int row, int column) {
+        Node result = null, nextRow = this.head.getNextRow();
+
+        while (nextRow != this.head && nextRow.getRow() < row) {
+            nextRow = nextRow.getNextRow();
+        }
+
+        while (nextRow != this.head && nextRow.getRow() == row && nextRow.getColumn() < column) {
+            nextRow = nextRow.getNextRow();
+        }
+
+        if (nextRow != this.head && nextRow.getRow() == row && nextRow.getColumn() == column) {
+            result = nextRow;
+        }
+
+        return result;
+    }
+
+    /**
+     * 
+     * @param node 
+     */
+    public void insertRow(Node node) {
+        Node startRow = this.head.getNextRow(), previous = null, temp;
+
+        while (startRow != this.head && startRow.getRow() < node.getRow()) {
+            previous = startRow;
+            startRow = startRow.getNextRow();
+        }
+
+        while (startRow != this.head && startRow.getRow() == node.getRow() && startRow.getColumn() < node.getColumn()) {
+            previous = startRow;
+            startRow = startRow.getNextRow();
+        }
+
+        if (startRow == this.head || previous != null && startRow.getRow() != node.getRow() || startRow.getColumn() != node.getColumn() || startRow == this.head) {
+            previous.setNextRow(node);
+            node.setNextRow(startRow);
+        }
+    }
+
+    /**
+     * 
+     * @param node 
+     */
+    public void insertColumn(Node node) {
+        Node startColumn = this.head.getNextColumn(), previous = null, temp;
+
+        while (startColumn != this.head && startColumn.getColumn() < node.getColumn()) {
+            previous = startColumn;
+            startColumn = startColumn.getNextColumn();
+        }
+
+        while (startColumn != this.head && startColumn.getColumn() == node.getColumn() && startColumn.getRow() < node.getRow()) {
+            previous = startColumn;
+            startColumn = startColumn.getNextColumn();
+        }
+
+        if (startColumn == this.head || previous != null && startColumn.getRow() != node.getRow() || startColumn.getColumn() != node.getColumn()) {
+            previous.setNextColumn(node);
+            node.setNextColumn(startColumn);
+        }
+    }
+
+    /**
+     * 
+     */
+    public void columnWithGreatestValue() {
+        Node startColumn = this.head.getNextColumn(), temp;
+        int column = 0;
+        float greatValue = 0;
+
+        while (startColumn != this.head) {
+            column = startColumn.getColumn();
+
+            while (startColumn != this.head && startColumn.getColumn() == column) {
+                if (startColumn.getValue() > greatValue) {
+                    greatValue = startColumn.getValue();
+                }
+
+                startColumn = startColumn.getNextColumn();
+            }
+
+            System.out.println(column + "   " + greatValue);
+        }
+    }
+
+    /**
+     * 
+     * @param node 
+     */
+    public void unbindRow(Node node) {
+        Node startRow = node.getNextRow(), previousRow = node;
+    
+        while (startRow != node) {
+            previousRow = startRow;
+            startRow = startRow.getNextRow();
+        }
+        
+        previousRow.setNextRow(node.getNextRow());
+    }
+
+    /**
+     * 
+     * @param node 
+     */
+    public void unbindColumn(Node node) {
+        Node startColumn = node.getNextColumn(), previousColumn = node;
+        
+        while (startColumn != previousColumn) {
+            previousColumn = startColumn;
+            startColumn = startColumn.getNextColumn();
+        }
+        
+        previousColumn.setNextColumn(node.getNextColumn());
+    }
+
+    /**
+     * 
+     * @param row
+     * @param column
+     * @return 
+     */
+    public boolean removeValue(int row, int column) {
+        boolean result = false;
+        Node temp = findPosition(row, column);
+
+        if (temp != null) {
+            result = true;
+            unbindRow(temp);
+            unbindColumn(temp);
+        }
+        
+        return result;
     }
 }
 
