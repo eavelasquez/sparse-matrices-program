@@ -15,25 +15,25 @@ public class SparseMatrixF1 {
     private Node head;
 
     /**
-     * 
+     *
      * @param rows
-     * @param columns 
+     * @param columns
      */
     public SparseMatrixF1(int rows, int columns) {
         this.head = createNewNode(rows, columns);
     }
 
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
     public Node getHead() {
         return head;
     }
 
     /**
-     * 
-     * @param head 
+     *
+     * @param head
      */
     public void setHead(Node head) {
         this.head = head;
@@ -48,8 +48,8 @@ public class SparseMatrixF1 {
 
         latest = start;
 
-        for (int i = 0; i < length; i++) {
-            Node newNode = new Node(i, i, 0);
+        for (int row = 0; row < length; row++) {
+            Node newNode = new Node(row, row, 0);
 
             newNode.setNextRow(newNode);
             newNode.setNextColumn(newNode);
@@ -63,8 +63,8 @@ public class SparseMatrixF1 {
     }
 
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
     public String show() {
         Node start = this.head.getNext(), temp;
@@ -80,7 +80,7 @@ public class SparseMatrixF1 {
             start = start.getNext();
         }
 
-        System.out.println("Sparse Matrix = " + string);
+        System.out.println("Sparse Matrix = \n" + string);
         return string;
     }
 
@@ -91,30 +91,33 @@ public class SparseMatrixF1 {
      * @return
      */
     public Node findPosition(int row, int column) {
-        Node start = this.head.getNext(), temp, result = null;
 
-        while (start.getRow() < row) {
+        Node start = this.head.getNext(), result, temp;
+        boolean find = false;
+
+
+        while (start != this.head) {
+            if (start.getRow() == row){
+                while ( start != this.head) {
+                    if (start.getColumn() == column){
+                        if (start.getNextRow().getColumn() == column){
+                            return start.getNextRow();
+                        }
+                        return start;
+                    }
+                    start = start.getNextRow();
+                }
+            }
             start = start.getNext();
         }
-
-        temp = start.getNextRow();
-
-        while (temp != start && temp.getColumn() < column) {
-            temp = temp.getNextRow();
-        }
-
-        if (start != temp && temp.getRow() == row && temp.getColumn() == column) {
-            result = temp;
-        }
-
-        return result;
+        return null;
     }
 
     /**
-     * 
+     *
      * @param row
      * @param column
-     * @param value 
+     * @param value
      */
     public void storeData(int row, int column, float value) {
         Node start = this.head.getNext(), temp, previousRow, previousColumn;
@@ -159,10 +162,10 @@ public class SparseMatrixF1 {
     }
 
     /**
-     * 
+     *
      * @param row
      * @param column
-     * @param value 
+     * @param value
      */
     public void insertData(int row, int column, float value) {
         Node start = this.head.getNext(), temp, previousRow, previousColumn;
@@ -214,8 +217,8 @@ public class SparseMatrixF1 {
     }
 
     /**
-     * 
-     * @param node 
+     *
+     * @param node
      */
     public void bindRow(Node node) {
         Node start = this.head.getNext(), temp, previous;
@@ -239,8 +242,8 @@ public class SparseMatrixF1 {
     }
 
     /**
-     * 
-     * @param node 
+     *
+     * @param node
      */
     public void bindColumn(Node node) {
         Node start = this.head.getNext(), temp, previous;
@@ -264,8 +267,8 @@ public class SparseMatrixF1 {
     }
 
     /**
-     * 
-     * @param node 
+     *
+     * @param node
      */
     public void unbindRow(Node node) {
         Node start = node.getNextRow(), previousRow = node.getNextRow();
@@ -279,8 +282,8 @@ public class SparseMatrixF1 {
     }
 
     /**
-     * 
-     * @param node 
+     *
+     * @param node
      */
     public void unbindColumn(Node node) {
         Node start = node.getNextRow(), previousColumn = node.getNextColumn();
@@ -294,7 +297,7 @@ public class SparseMatrixF1 {
     }
 
     /**
-     * 
+     *
      */
     public void rowWithGreatestValue() {
         Node start = this.head.getNext(), temp;
@@ -323,8 +326,58 @@ public class SparseMatrixF1 {
             start = start.getNext();
         }
     }
-}
 
+    public SparseMatrixF1 sum(SparseMatrixF1 matrixB) {
+        if ((this.getHead().getRow() != matrixB.getHead().getRow()) || this.getHead().getColumn() != matrixB.getHead().getColumn()){
+            return null;
+        }
+        SparseMatrixF1 result = new SparseMatrixF1(this.getHead().getRow(), this.getHead().getColumn());
+
+        for (int row = 0; row < matrixB.getHead().getRow(); row++) {
+            for (int column = 0; column < matrixB.getHead().getColumn(); column++) {
+                Node tempA = this.findPosition(row, column);
+                Node tempB = matrixB.findPosition(row, column);
+                if (tempA == null && tempB == null){
+                    continue;
+                }
+                if (tempA != null && tempB != null) {
+                    result.insertData(row, column, tempA.getValue() + tempB.getValue());
+                }
+                else if (tempA != null && tempB == null) {
+                    result.insertData(row, column, tempA.getValue());
+                }
+                else if (tempA == null && tempB != null) {
+                    result.insertData(row, column, tempB.getValue());
+                }
+             }
+        }
+        return result;
+    }
+
+
+public SparseMatrixF1 multiply(SparseMatrixF1 matrixB) {
+    if ((this.getHead().getRow() != matrixB.getHead().getRow()) || this.getHead().getColumn() != matrixB.getHead().getColumn()){
+        return null;
+    }
+    SparseMatrixF1 result = new SparseMatrixF1(this.getHead().getRow(), this.getHead().getColumn());
+
+    for (int row = 0; row < matrixB.getHead().getRow(); row++) {
+        for (int column = 0; column < matrixB.getHead().getColumn(); column++) {
+            int value = 0;
+            for (int j = 0; j < matrixB.getHead().getRow(); j++) {
+                Node tempB = matrixB.findPosition(j, column);
+                Node tempA = this.findPosition(row, j);
+                if (tempA == null || tempB == null){
+                    continue;
+                }
+
+                value += tempA.getValue() * tempB.getValue();
+            }
+            result.insertData(row, column, value);
+        }
+    }
+    return result;
+}
 /**
  * The {@code Node} class represents a node for linked lists.
  *
@@ -347,12 +400,12 @@ class Node {
      * @throws IllegalArgumentException if {@code column} is zero or negative.
      */
     public Node(int row, int column, float value) {
-        if (row <= 0) {
-            throw new IllegalArgumentException("coefficient cannot be zero or negative" + row);
-        }
-        if (column <= 0) {
-            throw new IllegalArgumentException("column cannot be zero or negative: " + column);
-        }
+        // if (row <= 0) {
+        //     throw new IllegalArgumentException("coefficient cannot be zero or negative" + row);
+        // }
+        // if (column <= 0) {
+        //     throw new IllegalArgumentException("column cannot be zero or negative: " + column);
+        // }
         this.row = row;
         this.column = column;
         this.value = value;
@@ -468,4 +521,5 @@ class Node {
     public void setNextColumn(Node nextColumn) {
         this.nextColumn = nextColumn;
     }
+}
 }
