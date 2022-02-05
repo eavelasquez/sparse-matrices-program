@@ -86,21 +86,17 @@ public class SparseMatrixF1 {
 
     /**
      *
-     * @param row the row.
+     * @param row    the row.
      * @param column the column.
      * @return
      */
     public Node findPosition(int row, int column) {
-
-        Node start = this.head.getNext(), result, temp;
-        boolean find = false;
-
-
+        Node start = this.head.getNext();
         while (start != this.head) {
-            if (start.getRow() == row){
-                while ( start != this.head) {
-                    if (start.getColumn() == column){
-                        if (start.getNextRow().getColumn() == column){
+            if (start.getRow() == row) {
+                while (start != this.head) {
+                    if (start.getColumn() == column) {
+                        if (start.getNextRow().getColumn() == column) {
                             return start.getNextRow();
                         }
                         return start;
@@ -320,15 +316,33 @@ public class SparseMatrixF1 {
 
                         temp = start.getNextRow();
                     }
-                    System.out.println("The greatest data is in the row " + start.getRow() + " and has a value " + greatValue);
+                    System.out.println(
+                            "The greatest data is in the row " + start.getRow() + " and has a value " + greatValue);
                 }
             }
             start = start.getNext();
         }
     }
 
+    public SparseMatrixF1 transpose() {
+        SparseMatrixF1 result = new SparseMatrixF1(this.getHead().getColumn(), this.getHead().getRow());
+        Node start = this.head.getNext(), temp;
+
+        while (start != this.head) {
+            temp = start.getNextRow();
+
+            while (start != temp) {
+                result.insertData(temp.getColumn(), temp.getRow(), temp.getValue());
+                temp = temp.getNextRow();
+            }
+            start = start.getNext();
+        }
+        return result;
+    }
+
     public SparseMatrixF1 sum(SparseMatrixF1 matrixB) {
-        if ((this.getHead().getRow() != matrixB.getHead().getRow()) || this.getHead().getColumn() != matrixB.getHead().getColumn()){
+        if ((this.getHead().getRow() != matrixB.getHead().getRow())
+                || this.getHead().getColumn() != matrixB.getHead().getColumn()) {
             return null;
         }
         SparseMatrixF1 result = new SparseMatrixF1(this.getHead().getRow(), this.getHead().getColumn());
@@ -337,189 +351,190 @@ public class SparseMatrixF1 {
             for (int column = 0; column < matrixB.getHead().getColumn(); column++) {
                 Node tempA = this.findPosition(row, column);
                 Node tempB = matrixB.findPosition(row, column);
-                if (tempA == null && tempB == null){
+                if (tempA == null && tempB == null) {
                     continue;
                 }
                 if (tempA != null && tempB != null) {
                     result.insertData(row, column, tempA.getValue() + tempB.getValue());
-                }
-                else if (tempA != null && tempB == null) {
+                } else if (tempA != null && tempB == null) {
                     result.insertData(row, column, tempA.getValue());
-                }
-                else if (tempA == null && tempB != null) {
+                } else if (tempA == null && tempB != null) {
                     result.insertData(row, column, tempB.getValue());
                 }
-             }
+            }
         }
         return result;
     }
 
+    public SparseMatrixF1 multiply(SparseMatrixF1 matrixB) {
+        if ((this.getHead().getRow() != matrixB.getHead().getRow())
+                || this.getHead().getColumn() != matrixB.getHead().getColumn()) {
+            return null;
+        }
+        SparseMatrixF1 result = new SparseMatrixF1(this.getHead().getRow(), this.getHead().getColumn());
 
-public SparseMatrixF1 multiply(SparseMatrixF1 matrixB) {
-    if ((this.getHead().getRow() != matrixB.getHead().getRow()) || this.getHead().getColumn() != matrixB.getHead().getColumn()){
-        return null;
-    }
-    SparseMatrixF1 result = new SparseMatrixF1(this.getHead().getRow(), this.getHead().getColumn());
+        for (int row = 0; row < matrixB.getHead().getRow(); row++) {
+            for (int column = 0; column < matrixB.getHead().getColumn(); column++) {
+                int value = 0;
+                for (int j = 0; j < matrixB.getHead().getRow(); j++) {
+                    Node tempB = matrixB.findPosition(j, column);
+                    Node tempA = this.findPosition(row, j);
+                    if (tempA == null || tempB == null) {
+                        continue;
+                    }
 
-    for (int row = 0; row < matrixB.getHead().getRow(); row++) {
-        for (int column = 0; column < matrixB.getHead().getColumn(); column++) {
-            int value = 0;
-            for (int j = 0; j < matrixB.getHead().getRow(); j++) {
-                Node tempB = matrixB.findPosition(j, column);
-                Node tempA = this.findPosition(row, j);
-                if (tempA == null || tempB == null){
-                    continue;
+                    value += tempA.getValue() * tempB.getValue();
                 }
-
-                value += tempA.getValue() * tempB.getValue();
+                result.insertData(row, column, value);
             }
-            result.insertData(row, column, value);
+        }
+        return result;
+    }
+
+    /**
+     * The {@code Node} class represents a node for linked lists.
+     *
+     * @author ev
+     * @author drestrepod
+     */
+    class Node {
+
+        private int row, column; // row and column of this node
+        private float value; // value of this node
+        private Node next, nextRow, nextColumn; // next node head (main, row, column)
+
+        /**
+         * Initializes a new node.
+         *
+         * @param row    the row.
+         * @param column the column.
+         * @param value  the value.
+         * @throws IllegalArgumentException if {@code row} is zero or negative.
+         * @throws IllegalArgumentException if {@code column} is zero or negative.
+         */
+        public Node(int row, int column, float value) {
+            // if (row <= 0) {
+            // throw new IllegalArgumentException("coefficient cannot be zero or negative" +
+            // row);
+            // }
+            // if (column <= 0) {
+            // throw new IllegalArgumentException("column cannot be zero or negative: " +
+            // column);
+            // }
+            this.row = row;
+            this.column = column;
+            this.value = value;
+            this.next = null;
+            this.nextRow = null;
+            this.nextColumn = null;
+        }
+
+        /**
+         * Returns the row of this node
+         *
+         * @return the row of this node.
+         */
+        public int getRow() {
+            return row;
+        }
+
+        /**
+         * Sets the row of this node.
+         *
+         * @param row the row.
+         */
+        public void setRow(int row) {
+            this.row = row;
+        }
+
+        /**
+         * Returns the column of this node
+         *
+         * @return the column of this node.
+         */
+        public int getColumn() {
+            return column;
+        }
+
+        /**
+         * Sets the column of this node.
+         *
+         * @param column the column.
+         */
+        public void setColumn(int column) {
+            this.column = column;
+        }
+
+        /**
+         * Returns the value of this node
+         *
+         * @return the value of this node.
+         */
+        public float getValue() {
+            return value;
+        }
+
+        /**
+         * Sets the value of this node.
+         *
+         * @param value the value.
+         */
+        public void setValue(float value) {
+            this.value = value;
+        }
+
+        /**
+         * Returns the next node head of this node.
+         *
+         * @return the next node head of this node.
+         */
+        public Node getNext() {
+            return next;
+        }
+
+        /**
+         * Sets the next node head of this node.
+         *
+         * @param next the next node head.
+         */
+        public void setNext(Node next) {
+            this.next = next;
+        }
+
+        /**
+         * Returns the next row node head of this node.
+         *
+         * @return the next row node head of this node.
+         */
+        public Node getNextRow() {
+            return nextRow;
+        }
+
+        /**
+         * Sets the next row node head of this node.
+         *
+         * @param nextRow the next row node head.
+         */
+        public void setNextRow(Node nextRow) {
+            this.nextRow = nextRow;
+        }
+
+        /**
+         * Returns the next column node head of this node.
+         *
+         * @return the next column node head of this node.
+         */
+        public Node getNextColumn() {
+            return nextColumn;
+        }
+
+        /**
+         * Sets the next column node head of this node.
+         *
+         * @param nextColumn the next column node head.
+         */
+        public void setNextColumn(Node nextColumn) {
+            this.nextColumn = nextColumn;
         }
     }
-    return result;
-}
-/**
- * The {@code Node} class represents a node for linked lists.
- *
- * @author ev
- * @author drestrepod
- */
-class Node {
-
-    private int row, column; // row and column of this node
-    private float value; // value of this node
-    private Node next, nextRow, nextColumn; // next node head (main, row, column)
-
-    /**
-     * Initializes a new node.
-     *
-     * @param row the row.
-     * @param column the column.
-     * @param value the value.
-     * @throws IllegalArgumentException if {@code row} is zero or negative.
-     * @throws IllegalArgumentException if {@code column} is zero or negative.
-     */
-    public Node(int row, int column, float value) {
-        // if (row <= 0) {
-        //     throw new IllegalArgumentException("coefficient cannot be zero or negative" + row);
-        // }
-        // if (column <= 0) {
-        //     throw new IllegalArgumentException("column cannot be zero or negative: " + column);
-        // }
-        this.row = row;
-        this.column = column;
-        this.value = value;
-        this.next = null;
-        this.nextRow = null;
-        this.nextColumn = null;
-    }
-
-    /**
-     * Returns the row of this node
-     *
-     * @return the row of this node.
-     */
-    public int getRow() {
-        return row;
-    }
-
-    /**
-     * Sets the row of this node.
-     *
-     * @param row the row.
-     */
-    public void setRow(int row) {
-        this.row = row;
-    }
-
-    /**
-     * Returns the column of this node
-     *
-     * @return the column of this node.
-     */
-    public int getColumn() {
-        return column;
-    }
-
-    /**
-     * Sets the column of this node.
-     *
-     * @param column the column.
-     */
-    public void setColumn(int column) {
-        this.column = column;
-    }
-
-    /**
-     * Returns the value of this node
-     *
-     * @return the value of this node.
-     */
-    public float getValue() {
-        return value;
-    }
-
-    /**
-     * Sets the value of this node.
-     *
-     * @param value the value.
-     */
-    public void setValue(float value) {
-        this.value = value;
-    }
-
-    /**
-     * Returns the next node head of this node.
-     *
-     * @return the next node head of this node.
-     */
-    public Node getNext() {
-        return next;
-    }
-
-    /**
-     * Sets the next node head of this node.
-     *
-     * @param next the next node head.
-     */
-    public void setNext(Node next) {
-        this.next = next;
-    }
-
-    /**
-     * Returns the next row node head of this node.
-     *
-     * @return the next row node head of this node.
-     */
-    public Node getNextRow() {
-        return nextRow;
-    }
-
-    /**
-     * Sets the next row node head of this node.
-     *
-     * @param nextRow the next row node head.
-     */
-    public void setNextRow(Node nextRow) {
-        this.nextRow = nextRow;
-    }
-
-    /**
-     * Returns the next column node head of this node.
-     *
-     * @return the next column node head of this node.
-     */
-    public Node getNextColumn() {
-        return nextColumn;
-    }
-
-    /**
-     * Sets the next column node head of this node.
-     *
-     * @param nextColumn the next column node head.
-     */
-    public void setNextColumn(Node nextColumn) {
-        this.nextColumn = nextColumn;
-    }
-}
 }
