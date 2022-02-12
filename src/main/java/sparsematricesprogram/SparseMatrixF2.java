@@ -340,6 +340,23 @@ public class SparseMatrixF2 {
         }
         return result;
     }
+
+    public SparseMatrixF2 transpose() {
+        SparseMatrixF2 result = new SparseMatrixF2(this.getHead().getColumn(), this.getHead().getRow());
+
+        Node startRow = this.head.getNextRow();
+
+        while (startRow != this.head) {
+            int column = startRow.getColumn();
+            int row = startRow.getRow();
+            Float value = startRow.getValue();
+
+            result.storeData(column, row, value);
+            startRow = startRow.getNextRow();
+        }
+        return result;
+    }
+
 }
 
 /**
