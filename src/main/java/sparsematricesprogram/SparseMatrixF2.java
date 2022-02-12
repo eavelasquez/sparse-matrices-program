@@ -316,6 +316,30 @@ public class SparseMatrixF2 {
         return result;
     }
 
+    public SparseMatrixF2 multiply(SparseMatrixF2 matrixB) {
+        if ((this.getHead().getRow() != matrixB.getHead().getRow())
+                || this.getHead().getColumn() != matrixB.getHead().getColumn()) {
+            return null;
+        }
+        SparseMatrixF2 result = new SparseMatrixF2(this.getHead().getRow(), this.getHead().getColumn());
+
+        for (int row = 1; row <= matrixB.getHead().getRow(); row++) {
+            for (int column = 1; column <= matrixB.getHead().getColumn(); column++) {
+                int value = 0;
+                for (int j = 1; j <= matrixB.getHead().getRow(); j++) {
+                    Node tempB = matrixB.findPosition(j, column);
+                    Node tempA = this.findPosition(row, j);
+                    if (tempA == null || tempB == null) {
+                        continue;
+                    }
+
+                    value += tempA.getValue() * tempB.getValue();
+                }
+                result.storeData(row, column, value);
+            }
+        }
+        return result;
+    }
 }
 
 /**
