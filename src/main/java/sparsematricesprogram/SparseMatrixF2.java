@@ -49,7 +49,12 @@ public class SparseMatrixF2 {
         // Node startColumn = this.head.getNextColumn();
 
         while (startRow != this.head) {
-            System.out.println("    " + startRow.getNextRow());
+            int column = startRow.getColumn();
+            int row = startRow.getRow();
+            Float value = startRow.getValue();
+            String print = String.format("%s %s %f", row, column, value);
+            System.out.println(print);
+            startRow = startRow.getNextRow();
         }
     }
 
@@ -96,9 +101,9 @@ public class SparseMatrixF2 {
     /**
      * This method is used to insert a data in the sparse matrix f2.
      *
-     * @param row the row to be inserted.
+     * @param row    the row to be inserted.
      * @param column the column to be inserted.
-     * @param value the value to be inserted.
+     * @param value  the value to be inserted.
      */
     public void insertNode(int row, int column, float value) {
         Node start = this.head.getNextRow(), previousRow = this.head, previousColumn = this.head;
@@ -165,8 +170,8 @@ public class SparseMatrixF2 {
     }
 
     /**
-     * 
-     * @param node 
+     *
+     * @param node
      */
     public void insertRow(Node node) {
         Node startRow = this.head.getNextRow(), previous = null, temp;
@@ -181,15 +186,16 @@ public class SparseMatrixF2 {
             startRow = startRow.getNextRow();
         }
 
-        if (startRow == this.head || previous != null && startRow.getRow() != node.getRow() || startRow.getColumn() != node.getColumn() || startRow == this.head) {
+        if (startRow == this.head || previous != null && startRow.getRow() != node.getRow()
+                || startRow.getColumn() != node.getColumn() || startRow == this.head) {
             previous.setNextRow(node);
             node.setNextRow(startRow);
         }
     }
 
     /**
-     * 
-     * @param node 
+     *
+     * @param node
      */
     public void insertColumn(Node node) {
         Node startColumn = this.head.getNextColumn(), previous = null, temp;
@@ -199,19 +205,21 @@ public class SparseMatrixF2 {
             startColumn = startColumn.getNextColumn();
         }
 
-        while (startColumn != this.head && startColumn.getColumn() == node.getColumn() && startColumn.getRow() < node.getRow()) {
+        while (startColumn != this.head && startColumn.getColumn() == node.getColumn()
+                && startColumn.getRow() < node.getRow()) {
             previous = startColumn;
             startColumn = startColumn.getNextColumn();
         }
 
-        if (startColumn == this.head || previous != null && startColumn.getRow() != node.getRow() || startColumn.getColumn() != node.getColumn()) {
+        if (startColumn == this.head || previous != null && startColumn.getRow() != node.getRow()
+                || startColumn.getColumn() != node.getColumn()) {
             previous.setNextColumn(node);
             node.setNextColumn(startColumn);
         }
     }
 
     /**
-     * 
+     *
      */
     public void columnWithGreatestValue() {
         Node startColumn = this.head.getNextColumn(), temp;
@@ -234,40 +242,40 @@ public class SparseMatrixF2 {
     }
 
     /**
-     * 
-     * @param node 
+     *
+     * @param node
      */
     public void unbindRow(Node node) {
         Node startRow = node.getNextRow(), previousRow = node;
-    
+
         while (startRow != node) {
             previousRow = startRow;
             startRow = startRow.getNextRow();
         }
-        
+
         previousRow.setNextRow(node.getNextRow());
     }
 
     /**
-     * 
-     * @param node 
+     *
+     * @param node
      */
     public void unbindColumn(Node node) {
         Node startColumn = node.getNextColumn(), previousColumn = node;
-        
+
         while (startColumn != previousColumn) {
             previousColumn = startColumn;
             startColumn = startColumn.getNextColumn();
         }
-        
+
         previousColumn.setNextColumn(node.getNextColumn());
     }
 
     /**
-     * 
+     *
      * @param row
      * @param column
-     * @return 
+     * @return
      */
     public boolean removeValue(int row, int column) {
         boolean result = false;
@@ -278,9 +286,36 @@ public class SparseMatrixF2 {
             unbindRow(temp);
             unbindColumn(temp);
         }
-        
+
         return result;
     }
+
+    public SparseMatrixF2 sum(SparseMatrixF2 matrixB) {
+        if ((this.getHead().getRow() != matrixB.getHead().getRow())
+                || this.getHead().getColumn() != matrixB.getHead().getColumn()) {
+            return null;
+        }
+        SparseMatrixF2 result = new SparseMatrixF2(this.getHead().getRow(), this.getHead().getColumn());
+
+        for (int row = 1; row <= matrixB.getHead().getRow(); row++) {
+            for (int column = 1; column <= matrixB.getHead().getColumn(); column++) {
+                Node tempA = this.findPosition(row, column);
+                Node tempB = matrixB.findPosition(row, column);
+                if (tempA == null && tempB == null) {
+                    continue;
+                }
+                if (tempA != null && tempB != null) {
+                    result.storeData(row, column, tempA.getValue() + tempB.getValue());
+                } else if (tempA != null && tempB == null) {
+                    result.storeData(row, column, tempA.getValue());
+                } else if (tempA == null && tempB != null) {
+                    result.storeData(row, column, tempB.getValue());
+                }
+            }
+        }
+        return result;
+    }
+
 }
 
 /**
@@ -298,9 +333,9 @@ class Node {
     /**
      * Initializes a new node.
      *
-     * @param row the row.
+     * @param row    the row.
      * @param column the column.
-     * @param value the value.
+     * @param value  the value.
      * @throws IllegalArgumentException if {@code row} is zero or negative.
      * @throws IllegalArgumentException if {@code column} is zero or negative.
      */
