@@ -1,38 +1,51 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+/******************************************************************************
+ *  Compilation:  javac SparseMatricesProgram.java
+ *  Execution:    java SparseMatricesProgram
+ *  
+ *  A sparse matrix, implementing with triplet, form 1 and form 2.
+ *
+ ******************************************************************************/
 package sparsematricesprogram;
 
 import java.util.Scanner;
 
 /**
+ *  The {@code SparseMatricesProgram} class represents a sparse matrix program.
  *
- * @author ev
- * @author drestrepom
+ *  @author ev
+ *  @author drestrepom
  */
 public class SparseMatricesProgram {
 
     /**
-     * @param args the command line arguments
+     * Unit tests the {@code SparseMatricesProgram} data type.
+     *
+     * @param args the command-line arguments
      */
     public static void main(String[] args) {
         int rows, columns, values;
         Scanner scanner = new Scanner(System.in);
-        SparseMatrixTriplet sparseMatrix;
+        SparseMatrixTriplet sparseMatrix, sparseMatrixTranspose;
 
-        System.out.println("Enter the number of rows:");
+        System.out.println("Enter the number of rows of the sparse matrix:");
         rows = Integer.parseInt(scanner.nextLine());
 
         columns = Integer.parseInt(scanner.nextLine());
-        System.out.println("Enter the number of columns:");
+        System.out.println("Enter the number of columns of the sparse matrix:");
 
         values = Integer.parseInt(scanner.nextLine());
-        System.out.println("Enter the number of values:");
+        System.out.println("Enter the number of values of the sparse matrix:");
         
         sparseMatrix = new SparseMatrixTriplet(rows, columns, values);
         sparseMatrix.insertTriplet(rows, columns, values);
+        // sparseMatrix.insertData(values);
         sparseMatrix.show();
+
+        sparseMatrixTranspose = sparseMatrix.transpose();
+
+        System.out.println("\n\nThe sparse matrix is:" + "\n");
+        sparseMatrix.show();
+        System.out.println("\n\nThe transpose of the sparse matrix is:" + "\n");
+        sparseMatrixTranspose.show();    
     }
 }

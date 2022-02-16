@@ -93,10 +93,32 @@ public class SparseMatrixTriplet {
      */
     public void show() {
         String string = "";
+
         for (int i = 0; i < this.sparseMatrix[0][2] + 1; i++) {
-            string += this.sparseMatrix[i][0] + "   " + this.sparseMatrix[i][1] + "    " + this.sparseMatrix[i][2];
+            string += this.sparseMatrix[i][0] + "   " + this.sparseMatrix[i][1] + "   " + this.sparseMatrix[i][2] + "\n";
         }
+
         System.out.println("Sparse Matrix Data: " + string);
+    }
+
+    public String showWithZeros() {
+        int t = 1;
+        String string = "";
+
+        for (int i = 0; i < this.rows; i++) {
+            for (int j = 0; j < this.columns; j++) {
+                if (t < this.sparseMatrix[0][2] + 1 && i == this.sparseMatrix[t][0] && j == this.sparseMatrix[t][1]) {
+                    string += this.sparseMatrix[t][2] + "   ";
+                    t += 1;
+                } else {
+                    string += "0.0   ";
+                }
+            }
+            
+            string += "\n\n";       
+        }
+        
+        return string;
     }
 
     /**
@@ -147,7 +169,7 @@ public class SparseMatrixTriplet {
     }
 
     /**
-     *
+     * This method is used to resize the sparse matrix.
      */
     public void resize() {
         this.values = this.values + 1;
@@ -245,36 +267,6 @@ public class SparseMatrixTriplet {
         }
 
         return result;
-    }
-
-    public void rowWithLeastSum() {
-        int i = 2, j = 1, row = 0, rowLessSum = 0, lessSum = 0, currentSum = 0, previousSum = 0;
-
-        while (i <= this.sparseMatrix[1][3] + 1) {
-            currentSum = 0;
-            row = (int) this.sparseMatrix[i][1];
-
-            while (j <= this.sparseMatrix[1][3] + 1 && row == this.sparseMatrix[i][1]) {
-                currentSum += (int) this.sparseMatrix[i][3];
-                j += 1;
-            }
-
-            if (row != rowLessSum) {
-                if (currentSum < previousSum) {
-                    previousSum = currentSum;
-                    rowLessSum = row;
-                }
-            }
-            row = rowLessSum;
-
-            if (currentSum < previousSum) {
-                previousSum = currentSum;
-                rowLessSum = row;
-            } else {
-                previousSum = 0;
-            }
-        }
-        System.out.println("The " + row + " has the least sum:" + lessSum);
     }
 
     /**

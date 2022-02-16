@@ -1,44 +1,57 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+/******************************************************************************
+ *  Compilation:  javac SparseMatrixF1.java
+ *  Execution:    java SparseMatrixF1
+ *  
+ *  A sparse matrix, implementing form 1.
+ *
+ ******************************************************************************/
 package sparsematricesprogram;
 
 /**
+ *  The {@code SparseMatrixF1} class represents a sparse matrix form 1.
  *
- * @author ev
- * @author drestrepom
+ *  @author ev
+ *  @author drestrepom
  */
 public class SparseMatrixF1 {
 
     private Node head;
 
     /**
+     * Initializes an empty sparse matrix.
      *
-     * @param rows
-     * @param columns
+     * @param rows the number of rows in the sparse matrix.
+     * @param columns the number of columns in the sparse matrix.
      */
     public SparseMatrixF1(int rows, int columns) {
         this.head = createNewNode(rows, columns);
     }
 
     /**
+     * Returns the node head of this sparse matrix.
      *
-     * @return
+     * @return the node head of this sparse matrix.
      */
     public Node getHead() {
         return head;
     }
 
     /**
+     * Sets the node head of this sparse matrix.
      *
-     * @param head
+     * @param head the node head of this sparse matrix.
      */
     public void setHead(Node head) {
         this.head = head;
     }
 
+    /**
+     * This method is used to create a new node for the sparse matrix.
+     *
+     * @param rows the number of rows in the sparse matrix.
+     * @param columns the number of columns in the sparse matrix.
+     * @return the node head of this sparse matrix.
+     */
     private Node createNewNode(int rows, int columns) {
         int length = rows > columns ? rows : columns;
         Node start = new Node(rows, columns, 0), latest;
@@ -63,8 +76,9 @@ public class SparseMatrixF1 {
     }
 
     /**
+     * This method is used to get a string that represents the sparse matrix.
      *
-     * @return
+     * @return the string that represents the sparse matrix.
      */
     public String show() {
         Node start = this.head.getNext(), temp;
@@ -85,10 +99,11 @@ public class SparseMatrixF1 {
     }
 
     /**
+     * This method is used to get the value of a specific cell of the sparse matrix.
      *
-     * @param row    the row.
-     * @param column the column.
-     * @return
+     * @param row the row of the cell.
+     * @param column the column of the cell.
+     * @return the value of the cell.
      */
     public Node findPosition(int row, int column) {
         Node start = this.head.getNext();
@@ -110,10 +125,11 @@ public class SparseMatrixF1 {
     }
 
     /**
+     * This method is used to store the value of a specific cell of the sparse matrix.
      *
-     * @param row
-     * @param column
-     * @param value
+     * @param row the row of the cell.
+     * @param column the column of the cell.
+     * @param value the value of the cell.
      */
     public void storeData(int row, int column, float value) {
         Node start = this.head.getNext(), temp, previousRow, previousColumn;
@@ -158,10 +174,11 @@ public class SparseMatrixF1 {
     }
 
     /**
+     * This method is used to insert a new value in the sparse matrix.
      *
-     * @param row
-     * @param column
-     * @param value
+     * @param row the row of the cell.
+     * @param column the column of the cell.
+     * @param value the value of the cell.
      */
     public void insertData(int row, int column, float value) {
         Node start = this.head.getNext(), temp, previousRow, previousColumn;
@@ -213,8 +230,9 @@ public class SparseMatrixF1 {
     }
 
     /**
+     * This method is used to bind a row to a sparse matrix.
      *
-     * @param node
+     * @param node the node that represents the row to be binded.
      */
     public void bindRow(Node node) {
         Node start = this.head.getNext(), temp, previous;
@@ -238,8 +256,9 @@ public class SparseMatrixF1 {
     }
 
     /**
+     * This method is used to bind a column to a sparse matrix.
      *
-     * @param node
+     * @param node the node that represents the column to be binded.
      */
     public void bindColumn(Node node) {
         Node start = this.head.getNext(), temp, previous;
@@ -263,8 +282,9 @@ public class SparseMatrixF1 {
     }
 
     /**
+     * This method is used to unbind a row from a sparse matrix.
      *
-     * @param node
+     * @param node the node that represents the row to be unbinded.
      */
     public void unbindRow(Node node) {
         Node start = node.getNextRow(), previousRow = node.getNextRow();
@@ -278,8 +298,9 @@ public class SparseMatrixF1 {
     }
 
     /**
+     * This method is used to unbind a column from a sparse matrix.
      *
-     * @param node
+     * @param node the node that represents the column to be unbinded.
      */
     public void unbindColumn(Node node) {
         Node start = node.getNextRow(), previousColumn = node.getNextColumn();
@@ -293,7 +314,7 @@ public class SparseMatrixF1 {
     }
 
     /**
-     *
+     * This method is used to get the row with the greatest value.
      */
     public void rowWithGreatestValue() {
         Node start = this.head.getNext(), temp;
@@ -324,7 +345,16 @@ public class SparseMatrixF1 {
         }
     }
 
+    /**
+     * This method is used to transpose a sparse matrix of this class.
+     *
+     * @return the transpose of the sparse matrix.
+     */
     public SparseMatrixF1 transpose() {
+        if (this.head.getRow() == 0 || this.head.getColumn() == 0) {
+            return null;
+        }
+
         SparseMatrixF1 result = new SparseMatrixF1(this.getHead().getColumn(), this.getHead().getRow());
         Node start = this.head.getNext(), temp;
 
@@ -337,23 +367,34 @@ public class SparseMatrixF1 {
             }
             start = start.getNext();
         }
+
         return result;
     }
 
+    /**
+     * This method is used to sum this sparse matrix and specific sparse matrix of this class.
+     *
+     * @param matrixB the sparse matrix to add to this sparse matrix.
+     * @return the sum of this sparse matrix and specific sparse matrix.
+     */
     public SparseMatrixF1 sum(SparseMatrixF1 matrixB) {
         if ((this.getHead().getRow() != matrixB.getHead().getRow())
                 || this.getHead().getColumn() != matrixB.getHead().getColumn()) {
+            System.out.println("The dimensions of the two sparse matrix are not equal.");
             return null;
         }
+
         SparseMatrixF1 result = new SparseMatrixF1(this.getHead().getRow(), this.getHead().getColumn());
 
         for (int row = 0; row < matrixB.getHead().getRow(); row++) {
             for (int column = 0; column < matrixB.getHead().getColumn(); column++) {
                 Node tempA = this.findPosition(row, column);
                 Node tempB = matrixB.findPosition(row, column);
+
                 if (tempA == null && tempB == null) {
                     continue;
                 }
+
                 if (tempA != null && tempB != null) {
                     result.insertData(row, column, tempA.getValue() + tempB.getValue());
                 } else if (tempA != null && tempB == null) {
@@ -363,31 +404,44 @@ public class SparseMatrixF1 {
                 }
             }
         }
+
         return result;
     }
 
+    /**
+     * This method is used to multiply this sparse matrix and specific sparse matrix of this class.
+     *
+     * @param matrixB the sparse matrix to multiply to this sparse matrix.
+     * @return the product of this sparse matrix and specific sparse matrix.
+     */
     public SparseMatrixF1 multiply(SparseMatrixF1 matrixB) {
         if ((this.getHead().getRow() != matrixB.getHead().getRow())
                 || this.getHead().getColumn() != matrixB.getHead().getColumn()) {
+            System.out.println("The dimensions of the two sparse matrix are not equal.");
             return null;
         }
+
         SparseMatrixF1 result = new SparseMatrixF1(this.getHead().getRow(), this.getHead().getColumn());
 
         for (int row = 0; row < matrixB.getHead().getRow(); row++) {
             for (int column = 0; column < matrixB.getHead().getColumn(); column++) {
                 int value = 0;
+
                 for (int j = 0; j < matrixB.getHead().getRow(); j++) {
                     Node tempB = matrixB.findPosition(j, column);
                     Node tempA = this.findPosition(row, j);
+
                     if (tempA == null || tempB == null) {
                         continue;
                     }
 
                     value += tempA.getValue() * tempB.getValue();
                 }
+
                 result.insertData(row, column, value);
             }
         }
+
         return result;
     }
 
@@ -409,24 +463,12 @@ public class SparseMatrixF1 {
          * @param row    the row.
          * @param column the column.
          * @param value  the value.
-         * @throws IllegalArgumentException if {@code row} is zero or negative.
-         * @throws IllegalArgumentException if {@code column} is zero or negative.
          */
         public Node(int row, int column, float value) {
-            // if (row <= 0) {
-            // throw new IllegalArgumentException("coefficient cannot be zero or negative" +
-            // row);
-            // }
-            // if (column <= 0) {
-            // throw new IllegalArgumentException("column cannot be zero or negative: " +
-            // column);
-            // }
             this.row = row;
             this.column = column;
             this.value = value;
-            this.next = null;
-            this.nextRow = null;
-            this.nextColumn = null;
+            this.next = this.nextRow = this.nextColumn = null;
         }
 
         /**

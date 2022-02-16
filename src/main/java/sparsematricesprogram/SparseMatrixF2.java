@@ -1,23 +1,27 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+/******************************************************************************
+ *  Compilation:  javac SparseMatrixF2.java
+ *  Execution:    java SparseMatrixF2
+ *  
+ *  A sparse matrix, implementing form 2.
+ *
+ ******************************************************************************/
 package sparsematricesprogram;
 
 /**
+ *  The {@code SparseMatrixF2} class represents a sparse matrix form 2.
  *
- * @author ev
- * @author drestrepom
+ *  @author ev
+ *  @author drestrepom
  */
 public class SparseMatrixF2 {
 
     private Node head; // head of list
 
     /**
+     * Initializes an empty sparse matrix.
      *
-     * @param rows
-     * @param columns
+     * @param rows the number of rows in the sparse matrix.
+     * @param columns the number of columns in the sparse matrix.
      */
     public SparseMatrixF2(int rows, int columns) {
         this.head = new Node(rows, columns, 0);
@@ -26,23 +30,25 @@ public class SparseMatrixF2 {
     }
 
     /**
+     * Returns the node head of this sparse matrix.
      *
-     * @return
+     * @return the node head of this sparse matrix.
      */
     public Node getHead() {
         return head;
     }
 
     /**
+     * Sets the node head of this sparse matrix.
      *
-     * @param head
+     * @param head the node head of this sparse matrix.
      */
     public void setHead(Node head) {
         this.head = head;
     }
 
     /**
-     *
+     * This method is used to show the sparse matrix (by row or column).
      */
     public void show() {
         Node startRow = this.head.getNextRow();
@@ -61,9 +67,9 @@ public class SparseMatrixF2 {
     /**
      * This method is used to store a data in the sparse matrix f2.
      *
-     * @param row
-     * @param column
-     * @param value
+     * @param row the row of the sparse matrix.
+     * @param column the column of the sparse matrix.
+     * @param value the value to be stored.
      */
     public void storeData(int row, int column, float value) {
         Node start = this.head.getNextRow(), previousRow = this.head, previousColumn = this.head;
@@ -146,10 +152,11 @@ public class SparseMatrixF2 {
     }
 
     /**
+     * This method is used to search a data in the sparse matrix f2.
      *
-     * @param row
-     * @param column
-     * @return
+     * @param row the row to be searched.
+     * @param column the column to be searched.
+     * @return the value of the searched data.
      */
     public Node findPosition(int row, int column) {
         Node result = null, nextRow = this.head.getNextRow();
@@ -170,8 +177,9 @@ public class SparseMatrixF2 {
     }
 
     /**
+     * This method is used to insert a row in the sparse matrix f2.
      *
-     * @param node
+     * @param node the node to be inserted.
      */
     public void insertRow(Node node) {
         Node startRow = this.head.getNextRow(), previous = null, temp;
@@ -194,8 +202,9 @@ public class SparseMatrixF2 {
     }
 
     /**
+     * This method is used to insert a row in the sparse matrix f2.
      *
-     * @param node
+     * @param node the node to be inserted.
      */
     public void insertColumn(Node node) {
         Node startColumn = this.head.getNextColumn(), previous = null, temp;
@@ -219,7 +228,7 @@ public class SparseMatrixF2 {
     }
 
     /**
-     *
+     * This method is used to get column with greatest value in the sparse matrix f2.
      */
     public void columnWithGreatestValue() {
         Node startColumn = this.head.getNextColumn(), temp;
@@ -242,8 +251,9 @@ public class SparseMatrixF2 {
     }
 
     /**
+     * This method is used to unbind row in the sparse matrix f2.
      *
-     * @param node
+     * @param node the node to be unbinded.
      */
     public void unbindRow(Node node) {
         Node startRow = node.getNextRow(), previousRow = node;
@@ -257,8 +267,9 @@ public class SparseMatrixF2 {
     }
 
     /**
+     * This method is used to unbind column in the sparse matrix f2.
      *
-     * @param node
+     * @param node the node to be unbinded.
      */
     public void unbindColumn(Node node) {
         Node startColumn = node.getNextColumn(), previousColumn = node;
@@ -272,10 +283,11 @@ public class SparseMatrixF2 {
     }
 
     /**
+     * This method is used to remove a value in the sparse matrix f2.
      *
-     * @param row
-     * @param column
-     * @return
+     * @param row the row of the value to be removed.
+     * @param column the column of the value to be removed.
+     * @return the value of the removed data.
      */
     public boolean removeValue(int row, int column) {
         boolean result = false;
@@ -290,20 +302,30 @@ public class SparseMatrixF2 {
         return result;
     }
 
+    /**
+     * This method is used to sum this sparse matrix and specific sparse matrix.
+     *
+     * @param matrixB the sparse matrix to add to this sparse matrix.
+     * @return the sum of this sparse matrix and specific sparse matrix.
+     */
     public SparseMatrixF2 sum(SparseMatrixF2 matrixB) {
         if ((this.getHead().getRow() != matrixB.getHead().getRow())
                 || this.getHead().getColumn() != matrixB.getHead().getColumn()) {
+            System.out.println("The dimensions of the two sparse matrix are not equal.");
             return null;
         }
+
         SparseMatrixF2 result = new SparseMatrixF2(this.getHead().getRow(), this.getHead().getColumn());
 
         for (int row = 1; row <= matrixB.getHead().getRow(); row++) {
             for (int column = 1; column <= matrixB.getHead().getColumn(); column++) {
                 Node tempA = this.findPosition(row, column);
                 Node tempB = matrixB.findPosition(row, column);
+
                 if (tempA == null && tempB == null) {
                     continue;
                 }
+
                 if (tempA != null && tempB != null) {
                     result.storeData(row, column, tempA.getValue() + tempB.getValue());
                 } else if (tempA != null && tempB == null) {
@@ -313,9 +335,16 @@ public class SparseMatrixF2 {
                 }
             }
         }
+
         return result;
     }
 
+    /**
+     * This method is used to multiply this sparse matrix and specific sparse matrix.
+     *
+     * @param matrixB the sparse matrix to multiply to this sparse matrix.
+     * @return the product of this sparse matrix and specific sparse matrix.
+     */
     public SparseMatrixF2 multiply(SparseMatrixF2 matrixB) {
         if ((this.getHead().getRow() != matrixB.getHead().getRow())
                 || this.getHead().getColumn() != matrixB.getHead().getColumn()) {
@@ -326,22 +355,34 @@ public class SparseMatrixF2 {
         for (int row = 1; row <= matrixB.getHead().getRow(); row++) {
             for (int column = 1; column <= matrixB.getHead().getColumn(); column++) {
                 int value = 0;
+
                 for (int j = 1; j <= matrixB.getHead().getRow(); j++) {
                     Node tempB = matrixB.findPosition(j, column);
                     Node tempA = this.findPosition(row, j);
+
                     if (tempA == null || tempB == null) {
                         continue;
                     }
 
                     value += tempA.getValue() * tempB.getValue();
                 }
+
                 result.storeData(row, column, value);
             }
         }
+
         return result;
     }
 
+    /**
+     * This method is used to transpose a sparse matrix of this class.
+     *
+     * @return the transpose of the sparse matrix.
+     */
     public SparseMatrixF2 transpose() {
+        if (this.getHead().getRow() == 0 || this.getHead().getColumn() == 0) {
+            return null;
+        }
         SparseMatrixF2 result = new SparseMatrixF2(this.getHead().getColumn(), this.getHead().getRow());
 
         Node startRow = this.head.getNextRow();
@@ -354,6 +395,7 @@ public class SparseMatrixF2 {
             result.storeData(column, row, value);
             startRow = startRow.getNextRow();
         }
+
         return result;
     }
 
@@ -390,8 +432,7 @@ class Node {
         this.row = row;
         this.column = column;
         this.value = value;
-        this.nextRow = null;
-        this.nextColumn = null;
+        this.nextRow = this.nextColumn = null;
     }
 
     /**
