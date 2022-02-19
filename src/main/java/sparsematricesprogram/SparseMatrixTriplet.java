@@ -95,7 +95,8 @@ public class SparseMatrixTriplet {
         String string = "";
 
         for (int i = 0; i < this.sparseMatrix[0][2] + 1; i++) {
-            string += this.sparseMatrix[i][0] + "   " + this.sparseMatrix[i][1] + "   " + this.sparseMatrix[i][2] + "\n";
+            string += this.sparseMatrix[i][0] + "   " + this.sparseMatrix[i][1] + "   " + this.sparseMatrix[i][2]
+                    + "\n";
         }
 
         System.out.println("Sparse Matrix Data: " + string);
@@ -114,10 +115,10 @@ public class SparseMatrixTriplet {
                     string += "0.0   ";
                 }
             }
-            
-            string += "\n\n";       
+
+            string += "\n\n";
         }
-        
+
         return string;
     }
 
@@ -233,6 +234,25 @@ public class SparseMatrixTriplet {
      * @param value
      * @return
      */
+    public void insert(int row, int column, float value) {
+        if (row > rows || column > columns) {
+            System.out.println("Wrong entry");
+        } else {
+            this.sparseMatrix[(int) this.sparseMatrix[0][2] + 1][0] = row;
+            this.sparseMatrix[(int) this.sparseMatrix[0][2] + 1][1] = column;
+            this.sparseMatrix[(int) this.sparseMatrix[0][2] + 1][2] = value;
+
+            this.sparseMatrix[0][2] += 1;
+        }
+    }
+
+    /**
+     *
+     * @param row
+     * @param column
+     * @param value
+     * @return
+     */
     public boolean storeTriplet(int row, int column, float value) {
         boolean isExist = true;
         int i = findPosition(row, column);
@@ -258,7 +278,7 @@ public class SparseMatrixTriplet {
 
     /**
      * 
-     * @return 
+     * @return
      */
     public int addValues() {
         int result = 0;
@@ -312,15 +332,51 @@ public class SparseMatrixTriplet {
         if (this.rows != B.rows || this.columns != B.columns) {
             System.out.println("Matrices can't be added.");
         } else {
+            int apos = 1, bpos = 1;
             SparseMatrixTriplet sum = new SparseMatrixTriplet(this.rows, this.columns, 0);
 
-            for (int i = 0; i < this.rows; i++) {
-                for (int j = 0; j < this.columns; j++) {
-                    // sum[i][j] = this.sparseMatrix[i][j] + B[i][j];  
+            while (apos < this.sparseMatrix[0][2] + 1 && bpos < this.sparseMatrix[0][2] + 1) {
+                if (this.sparseMatrix[apos][0] > B.findPosition(bpos, 0) ||
+                        (this.sparseMatrix[apos][0] == B.findPosition(bpos, 0) &&
+                                this.sparseMatrix[apos][1] > B.findPosition(bpos, 1))) {
+                    // if B's row and column is smaller
+                    // insert smaller value into result
+                    sum.insert(B.findPosition(bpos, 0), B.findPosition(bpos, 1), B.findPosition(bpos, 2));
+
+                    bpos += 1;
+                } else if (this.sparseMatrix[apos][0] < B.findPosition(bpos, 0) ||
+                        (this.sparseMatrix[apos][0] == B.findPosition(bpos, 0) &&
+                                this.sparseMatrix[apos][1] < B.findPosition(bpos, 1))) {
+                    // if sparseMatrix's row and column is smaller
+                    // insert smaller value into result
+                    sum.insert((int) this.sparseMatrix[apos][0], (int) this.sparseMatrix[apos][1],
+                            this.sparseMatrix[apos][2]);
+
+                    apos += 1;
+                } else {
+                    // add the values as row and column is same
+                    float addedval = (this.sparseMatrix[apos][2] + B.findPosition(bpos, 2));
+
+                    if (addedval != 0) {
+                        sum.insert((int) this.sparseMatrix[apos][0], (int) this.sparseMatrix[apos][1], addedval);
+                    }
+
+                    apos += 1;
+                    bpos += 1;
                 }
             }
 
-            System.out.println("Sum of two matrices is: ");
+            // insert remaining elements of sparseMatrix and b
+            while (apos < this.sparseMatrix[0][2] + 1) {
+                sum.insert((int) this.sparseMatrix[apos][0], (int) this.sparseMatrix[apos][1],
+                        this.sparseMatrix[apos++][2]);
+            }
+
+            while (bpos < this.sparseMatrix[0][2] + 1) {
+                sum.insert(B.findPosition(bpos, 0), B.findPosition(bpos, 1), B.findPosition(bpos++, 2));
+            }
+
+            System.out.println("Sum of two matrices is: " + sum.showWithZeros());
         }
     }
 
@@ -332,21 +388,76 @@ public class SparseMatrixTriplet {
     public void multiply(SparseMatrixTriplet B) {
         if (this.columns != B.rows) {
             System.out.println("Matrices can't be multiplied.");
-        } else {
-            SparseMatrixTriplet product = new SparseMatrixTriplet(this.rows, B.columns, 0);
+            return;
+        }
 
-            for (int i = 0; i < this.rows; i++) {
-                for (int j = 0; j < B.columns; j++) {
-                    for (int k = 0; k < this.columns; k++) {
-                        // product[i][j] += this.sparseMatrix[i][k] * B[k][j];
-                    }
+        // transpose b to compare row and col values and to add them at the end
+        B = B.transpose();
+
+        int apos, bpos;
+        // result matrix of dimension row X b.col however b has been transposed, hence
+        // row X b.row
+        SparseMatrixTriplet product = new SparseMatrixTriplet(this.rows, B.columns, 0);
+
+        // iterate over all elements of A
+        for (apos = 1; apos < this.sparseMatrix[0][2] + 1;) {
+            // current row of result matrix
+            int r = (int) this.sparseMatrix[apos][0];
+
+            // iterate over all elements of B
+            for (bpos = 1; bpos < B.values + 1;) {
+
+                // current column of result matrix this.sparseMatrix[][0] used as b is
+                // transposed
+                int c = B.findPosition(bpos, 0);
+
+                // temporary pointers created to add all multiplied values to obtain current
+                // 
+                // element of result matrix
+                int tempa = apos;
+                int tempb = bpos;
+
+                int sum = 0;
+
+                // iterate over all elements with same row and col value to calculate result[r]
+                while (tempa < this.sparseMatrix[0][2] + 1 && this.sparseMatrix[tempa][0] == r
+                        && tempb < B.values + 1 && B.findPosition(tempb, 0) == c) {
+
+                    if (this.sparseMatrix[tempa][1] < B.findPosition(tempb, 1))
+
+                        // skip a
+                        tempa++;
+
+                    else if (this.sparseMatrix[tempa][1] > B.findPosition(tempb, 1))
+
+                        // skip b
+                        tempb++;
+                    else
+
+                        // same col, so multiply and increment
+                        sum += this.sparseMatrix[tempa++][2] * B.findPosition(tempb++, 2);
+                }
+
+                // insert sum obtained in product[r] if its not equal to 0
+                if (sum != 0) {
+                    product.insert(r, c, sum);
+                }
+
+                while (bpos < B.values + 1 && B.findPosition(bpos, 0) == c) {
+                    // jump to next column
+                    bpos += 1;
                 }
             }
 
-            System.out.println("Multiplication of two matrices is: ");
+            while (apos < this.sparseMatrix[0][2] + 1 && this.sparseMatrix[apos][0] == r) {
+                // jump to next row
+                apos++;
+            }
         }
+
+        product.show();
     }
-    
+
     /**
      * Transpose the matrix
      *
@@ -356,7 +467,8 @@ public class SparseMatrixTriplet {
         SparseMatrixTriplet transpose = new SparseMatrixTriplet(this.getRows(), this.getColumns(), this.getValues());
 
         for (int i = 0; i < this.sparseMatrix[0][2] + 1; i++) {
-            transpose.storeTriplet((int) this.sparseMatrix[i][1], (int) this.sparseMatrix[i][0], this.sparseMatrix[i][2]);
+            transpose.storeTriplet((int) this.sparseMatrix[i][1], (int) this.sparseMatrix[i][0],
+                    this.sparseMatrix[i][2]);
         }
 
         return transpose;
